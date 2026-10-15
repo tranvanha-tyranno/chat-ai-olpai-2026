@@ -1,0 +1,11 @@
+{
+  "name": "qwen-chat-room",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Chat UI for Qwen3 32B through OpenRouter",
+  "type": "module",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node server.js"
+  }
+}
