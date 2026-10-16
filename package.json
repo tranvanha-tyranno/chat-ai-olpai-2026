@@ -2,10 +2,17 @@
   "name": "qwen-chat-room",
   "version": "1.0.0",
   "private": true,
-  "description": "Chat UI for Qwen3 32B through OpenRouter",
+  "description": "Chat UI with configurable OpenRouter and Groq models",
   "type": "module",
   "scripts": {
     "start": "node server.js",
-    "dev": "node server.js"
+    "dev": "node server.js",
+    "test": "node --test",
+    "build": "node --check server.js && node --check lib/env.js && node --check lib/response.js && node --check lib/usage.js && node --check lib/model-availability.js && node --check lib/openrouter-error.js && node --check lib/providers.js && node --check public/app.js && node --check public/markdown.js && node --check public/tokens.js && node --check public/config/models.js"
+  },
+  "dependencies": {
+    "@highlightjs/cdn-assets": "^11.12.0",
+    "dompurify": "^3.4.17",
+    "marked": "^18.1.1"
   }
 }

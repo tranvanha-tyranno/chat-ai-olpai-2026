@@ -1,3 +1,5 @@
 .env
 node_modules/
 npm-debug.log*
+data/provider-keys.json
+data/provider-keys.json.tmp

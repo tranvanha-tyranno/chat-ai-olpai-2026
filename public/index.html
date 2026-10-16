@@ -32,7 +32,7 @@
       <aside class="sidebar">
         <div class="brand-row">
           <div class="brand-mark" aria-hidden="true"><span></span><span></span><span></span></div>
-          <span class="brand-name">qwen<span>room</span></span>
+          <span class="brand-name">ChatOLPAI<span>room</span></span>
         </div>
 
         <button class="new-chat-button" id="new-chat" type="button">
@@ -41,15 +41,14 @@
           <span class="shortcut">Ctrl K</span>
         </button>
 
-        <div class="side-section">
-          <div class="side-label">Bắt đầu nhanh</div>
-          <button class="starter" data-prompt="Giúp tôi lập kế hoạch học một kỹ năng mới trong 30 ngày."><span class="starter-icon">✦</span><span>Lập kế hoạch học tập</span></button>
-          <button class="starter" data-prompt="Tóm tắt những ý chính của một bài viết tôi sắp gửi."><span class="starter-icon">↗</span><span>Tóm tắt văn bản</span></button>
-          <button class="starter" data-prompt="Giải thích một khái niệm khó bằng ví dụ thật đơn giản."><span class="starter-icon">◌</span><span>Giải thích dễ hiểu</span></button>
-        </div>
+        <nav class="history-section" aria-label="Lịch sử trò chuyện">
+          <div class="history-heading"><div class="side-label">Các cuộc trò chuyện</div><button class="history-clear" type="button" data-delete-all>Xóa tất cả</button></div>
+          <div id="session-list" class="session-list"></div>
+        </nav>
 
+        <div class="budget-dock" id="budget-dock" hidden aria-hidden="true"></div>
         <div class="sidebar-footer">
-          <div class="model-mini"><span class="status-dot"></span><div><strong>Qwen3 32B</strong><small>Đang hoạt động · OpenRouter</small></div><span class="chevron">⌄</span></div>
+          <div class="model-mini"><span class="status-dot"></span><div><strong data-model-label></strong><small id="model-connection-status">Đã chọn · OpenRouter</small></div></div>
           <div class="footer-note"><span class="lock">▣</span> Tin nhắn được xử lý riêng tư</div>
         </div>
       </aside>
@@ -58,35 +57,82 @@
         <header class="topbar">
           <div class="mobile-brand"><div class="brand-mark" aria-hidden="true"><span></span><span></span><span></span></div><span>qwen<span>room</span></span></div>
           <div class="session-title"><span class="live-dot"></span><span id="session-label">Phiên chat mới</span></div>
-          <div class="top-actions"><button class="account-button" id="account-button" type="button" title="Đổi mã ID"><span class="account-avatar" id="account-avatar">T</span><span id="account-id">Tyranno</span><span class="account-chevron">⌄</span></button><div class="model-pill"><span>MODEL</span><b>qwen/qwen3-32b</b></div><button class="icon-button" id="clear-chat" title="Xóa tin nhắn" aria-label="Xóa tin nhắn">⌫</button></div>
+          <div class="top-actions">
+            <button class="account-button" id="account-button" type="button" title="Đổi mã ID"><span class="account-avatar" id="account-avatar">T</span><span id="account-id">Tyranno</span><span class="account-chevron">⌄</span></button>
+            <div class="model-pill"><span id="active-provider">OpenRouter</span><b id="active-model-id"></b></div>
+            <button class="budget-button" id="budget-button" type="button" aria-haspopup="dialog" aria-controls="budget-popover" aria-expanded="false"><span class="budget-ring" aria-hidden="true"></span><span class="budget-caption">Token</span><strong id="budget-summary">0 / 3K</strong></button>
+            <button class="settings-button" id="settings-button" type="button" aria-haspopup="dialog" aria-controls="settings-dialog">Cài đặt</button>
+            <button class="icon-button delete-current" id="delete-current" type="button" title="Xóa cuộc trò chuyện hiện tại" aria-label="Xóa cuộc trò chuyện hiện tại" disabled>⌫</button>
+            <button class="icon-button" id="clear-chat" title="Tạo phiên chat mới, giữ lịch sử cũ" aria-label="Tạo phiên chat mới">+</button>
+          </div>
         </header>
 
-        <section class="chat-stage" id="chat-stage">
+        <nav class="mobile-history" aria-label="Chọn cuộc trò chuyện">
+          <select id="session-picker" aria-label="Phiên chat đã lưu"></select>
+          <button id="mobile-new-chat" type="button">+ Chat mới</button>
+        </nav>
+
+        <section class="chat-stage" id="chat-stage" tabindex="-1" aria-label="Nội dung trò chuyện">
           <div class="welcome" id="welcome">
             <div class="welcome-orb" aria-hidden="true"><span>✦</span></div>
             <div class="eyebrow"><span class="eyebrow-line"></span> TRỢ LÝ AI CỦA BẠN <span class="eyebrow-line"></span></div>
             <h1>Bạn muốn<br /><em>khám phá điều gì?</em></h1>
-            <p>Hỏi Qwen3 32B bất cứ điều gì. Mình sẵn sàng cùng bạn suy nghĩ.</p>
-            <div class="prompt-grid">
-              <button class="prompt-card" data-prompt="Đề xuất cho tôi 5 ý tưởng side project phù hợp với một developer mới bắt đầu."><span class="card-symbol">✦</span><span>Cho tôi ý tưởng<br /><b>side project</b></span><span class="arrow">↗</span></button>
-              <button class="prompt-card" data-prompt="Viết lại đoạn giới thiệu bản thân này theo giọng chuyên nghiệp, súc tích và thân thiện."><span class="card-symbol">≡</span><span>Cải thiện một<br /><b>đoạn văn</b></span><span class="arrow">↗</span></button>
-              <button class="prompt-card" data-prompt="Giúp tôi biến một mục tiêu lớn thành danh sách hành động cụ thể cho tuần này."><span class="card-symbol">◌</span><span>Biến mục tiêu thành<br /><b>hành động</b></span><span class="arrow">↗</span></button>
-            </div>
+            <p>Hỏi <span data-model-label></span> bất cứ điều gì. Mình sẵn sàng cùng bạn suy nghĩ.</p>
           </div>
           <div class="messages" id="messages" aria-live="polite"></div>
         </section>
 
-        <section class="composer-wrap">
-          <div class="usage-row"><div class="usage-label"><span>NGÂN SÁCH PHIÊN</span><strong id="usage-text">0 / 3.000 token</strong></div><div class="usage-track"><span id="usage-bar"></span></div></div>
+        <section class="composer-wrap" id="composer-wrap" aria-label="Soạn tin nhắn">
+          <div class="model-notice" id="model-notice" role="alert" hidden><p id="model-notice-text"></p><button id="change-unavailable-model" type="button">Đổi model</button></div>
+          <div class="response-activity" id="response-activity" hidden>
+            <div class="activity-heading"><span id="activity-label" role="status">Đang chờ phản hồi…</span><span id="activity-time" aria-live="off">0,0 giây</span></div>
+            <div class="activity-track" role="progressbar" aria-label="Đang chờ phản hồi"><span></span></div>
+          </div>
           <form class="composer" id="chat-form">
-            <textarea id="message-input" rows="1" maxlength="12000" placeholder="Nhắn cho Qwen bất cứ điều gì..." aria-label="Tin nhắn"></textarea>
-            <div class="composer-bottom"><span class="hint">Enter để gửi · Shift + Enter để xuống dòng</span><button class="send-button" id="send-button" type="submit" aria-label="Gửi tin nhắn"><span>Gửi</span><span class="send-arrow">↗</span></button></div>
+            <textarea id="message-input" rows="1" maxlength="12000" placeholder="Nhắn tiếp…" aria-label="Tin nhắn" aria-describedby="composer-token-hint"></textarea>
+            <button class="send-button" id="send-button" type="submit" aria-label="Gửi tin nhắn"><span class="send-label">Gửi</span><span class="send-arrow">↗</span></button>
+            <div class="composer-extras"><span class="hint">Enter để gửi · Shift + Enter để xuống dòng</span><button class="composer-token-button" id="composer-budget-button" type="button" aria-haspopup="dialog" aria-controls="budget-popover" aria-expanded="false"><span id="composer-token-hint">Xem ngân sách token</span><span aria-hidden="true">↗</span></button></div>
           </form>
-          <div class="powered">QWEN3 32B <span>·</span> OPENROUTER <span>·</span> GIỚI HẠN 3K TOKEN / PHIÊN</div>
+          <p class="composer-alert" id="composer-alert" role="status" hidden></p>
         </section>
       </main>
     </div>
+    <section class="budget-popover" id="budget-popover" popover="manual" role="dialog" aria-labelledby="budget-title">
+      <div class="budget-heading"><div><span class="budget-eyebrow">THEO DÕI TOKEN</span><h2 id="budget-title">Ngân sách phiên</h2></div><button class="icon-button" id="close-budget" type="button" aria-label="Đóng ngân sách token">×</button></div>
+      <div class="usage-row"><div class="usage-label"><span>ĐÃ SỬ DỤNG</span><strong id="usage-text">0 / 3.000 token</strong></div><div class="usage-track" title="Xanh: đã dùng. Vàng: token dự kiến cho lượt gửi tiếp theo."><span id="usage-bar"></span><span id="usage-preview-bar"></span></div></div>
+      <form class="session-budget-form" id="session-budget-form">
+        <label for="session-token-limit">Ngân sách phiên (token)</label>
+        <div><input id="session-token-limit" type="number" value="3000" min="100" max="1000000" step="1" title="Lưu cho phiên hiện tại và làm mặc định cho phiên mới. Giới hạn riêng của model vẫn áp dụng." required /><button id="save-session-budget" type="submit">Lưu</button></div>
+        <p id="session-budget-status" role="status"></p>
+      </form>
+      <div class="token-preview" id="token-preview" aria-label="Ước tính token trước khi gửi">
+        <div class="token-preview-heading"><span id="draft-characters">0 ký tự</span><span id="draft-token-delta" title="Thay đổi token ước tính so với lần nhập trước"></span></div>
+        <div class="token-preview-grid">
+          <div><span id="draft-token-label">Tin đang gõ</span><strong id="draft-token-count">~0</strong></div>
+          <div title="Lịch sử được gửi kèm để model nhớ ngữ cảnh"><span>Ngữ cảnh</span><strong id="context-token-count">~0</strong></div>
+          <div title="Tin mới + ngữ cảnh + phần định dạng tin nhắn"><span>Tổng gửi</span><strong id="request-token-count">~0</strong></div>
+          <div title="Ngân sách tối đa còn lại cho câu trả lời, gồm cả token tư duy"><span>Còn cho trả lời</span><strong id="reply-token-count">~3.000</strong></div>
+        </div>
+        <p class="token-warning" id="token-warning" role="status" hidden></p>
+      </div>
+      <p class="budget-note">Dấu ~ là ước tính. Ngân sách là tổng token của phiên; giới hạn riêng của model vẫn áp dụng.</p>
+    </section>
+    <dialog class="settings-dialog" id="settings-dialog" aria-labelledby="settings-title">
+      <div class="settings-heading"><h2 id="settings-title">Cài đặt</h2><button class="icon-button" id="close-settings" type="button" aria-label="Đóng Cài đặt">×</button></div>
+      <label for="model-picker">Model &amp; nhà cung cấp</label>
+      <select id="model-picker" aria-describedby="model-help"></select>
+      <p>Model từ 30–500B tổng tham số. Với MoE, “active” là phần tham số được dùng mỗi lượt.</p>
+      <p id="model-help">Lựa chọn được lưu tự động trên trình duyệt này và áp dụng cho tin nhắn tiếp theo.</p>
+      <p class="model-availability-note" id="model-availability-note" role="status">Đang kiểm tra trạng thái model…</p>
+      <div class="settings-history"><h3>Lịch sử trò chuyện</h3><p>Xóa mọi cuộc trò chuyện của mã ID hiện tại.</p><button class="danger-button" type="button" data-delete-all>Xóa toàn bộ lịch sử</button></div>
+    </dialog>
+    <dialog class="settings-dialog delete-dialog" id="delete-dialog" aria-labelledby="delete-title" aria-describedby="delete-description">
+      <h2 id="delete-title">Xóa lịch sử chat?</h2>
+      <p id="delete-description"></p>
+      <p id="delete-error" role="alert"></p>
+      <div class="dialog-actions"><button class="settings-button" id="cancel-delete" type="button" autofocus>Hủy</button><button class="danger-button" id="confirm-delete" type="button">Xóa vĩnh viễn</button></div>
+    </dialog>
     <div class="toast" id="toast" role="status"></div>
-    <script src="/app.js"></script>
+    <script type="module" src="/app.js"></script>
   </body>
 </html>
